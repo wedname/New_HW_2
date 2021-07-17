@@ -196,6 +196,7 @@ class WiredHeadphones(IHeadphones, IHeadphonesInterfaces):
         print("Проводные наушники")
 
     def connected(self):
+        print("Подключение через mini-jack")
         self.connect = True
 
     def switching_music(self, value):
@@ -222,6 +223,7 @@ class WirelessHeadphones(IHeadphones, IHeadphonesInterfaces):
         print("Беспроводные наушники")
 
     def connected(self):
+        print("Подключение по блютуз")
         self.connect = True
 
     def switching_music(self, value):
@@ -242,15 +244,11 @@ class WirelessHeadphones(IHeadphones, IHeadphonesInterfaces):
 class User:
 
     def __init__(self, headphone: IHeadphones):
-        self.headphone = headphone
+        self.headphone = self.set_headphones(headphone)
 
-    @property
-    def headphone(self):
-        return self._headphone
-
-    @headphone.setter
-    def headphone(self, value: IHeadphones):
-        self._headphone = value
+    def set_headphones(self, val):
+        self.headphone = val
+        return self.headphone
 
 
 print("Работа с наушниками:")
@@ -261,5 +259,49 @@ print(f"Подключение беспроводных наушников: {use
 print("Ставим на паузу:")
 user.headphone.switching_music('One press')
 print("Смена наушников:")
-user.headphone(WiredHeadphones())
+user.set_headphones(WiredHeadphones())
+user.headphone.type()
 
+
+# Задание 2 ------------------------------------------------------------------------------------------------------------
+
+class IHeadset(ABC):
+
+    @abstractmethod
+    def microphone(self, *args):
+        pass
+
+
+class IMusicColumn(ABC):
+
+    @abstractmethod
+    def equalizer(self, *args):
+        pass
+
+    @abstractmethod
+    def navigate(self, *args):
+        pass
+
+
+class Headset(IHeadset):
+
+    def microphone(self, value: str):
+        print(value)
+        return value
+
+
+class MusicColumn(IMusicColumn):
+
+    def equalizer(self, value: str):
+        if value == "+":
+            print("Увеличить громкость")
+        elif value == "-":
+            print("Уменьшить громкость")
+
+    def navigate(self, value: str):
+        if value == "Double click":
+            print("Переключение на следующий трек")
+        elif value == "Triple click":
+            print("Переключение на предыдущий трек")
+        elif value == "One click":
+            print("Пауза")
