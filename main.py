@@ -26,6 +26,7 @@
 """
 # Задача ---------------------------------------------------------------------------------------------------------------
 from abc import *
+from abc import ABC
 
 
 class ILocked(ABC):
@@ -120,7 +121,7 @@ class Apartment(LockedLodging, VisitLodging, IApartment):
         self._balcony = value
 
 
-class House(LockedLodging, VisitLodging):
+class House(LockedLodging, VisitLodging, IHouse):
     def __init__(self, address: str, pool: bool, garage=True):
         super().__init__()
         self.pool = pool
@@ -152,12 +153,113 @@ class House(LockedLodging, VisitLodging):
         self._address = value
 
 
+print("Апартаменты:")
 apartment = Apartment("Одесса, Черняховского 14", True)
 apartment.open()
-print(apartment.locked)
+print(f"Открываем апартаменты: {apartment.locked}")
 apartment.enter()
-print(apartment.visit)
+print(f"Заходим в апартаменты: {apartment.visit}")
 apartment.close()
-print(apartment.locked)
+print(f"Закрываем апартаменты: {apartment.locked}")
 
 # Задание 1 ------------------------------------------------------------------------------------------------------------
+
+
+class IHeadphones(ABC):
+
+    @abstractmethod
+    def type(self):
+        pass
+
+    @abstractmethod
+    def connected(self):
+        pass
+
+
+class IHeadphonesInterfaces(ABC):
+
+    @abstractmethod
+    def switching_music(self, *args):
+        pass
+
+    @abstractmethod
+    def volume(self, *args):
+        pass
+
+
+class WiredHeadphones(IHeadphones, IHeadphonesInterfaces):
+
+    def __init__(self):
+        self.connect = False
+
+    def type(self):
+        print("Проводные наушники")
+
+    def connected(self):
+        self.connect = True
+
+    def switching_music(self, value):
+        if value == "Double click":
+            print("Переключение на следующий трек")
+        elif value == "Triple click":
+            print("Переключение на предыдущий трек")
+        elif value == "One click":
+            print("Пауза")
+
+    def volume(self, value):
+        if value == "+":
+            print("Увеличить громкость")
+        elif value == "-":
+            print("Уменьшить громкость")
+
+
+class WirelessHeadphones(IHeadphones, IHeadphonesInterfaces):
+
+    def __init__(self):
+        self.connect = False
+
+    def type(self):
+        print("Беспроводные наушники")
+
+    def connected(self):
+        self.connect = True
+
+    def switching_music(self, value):
+        if value == "Double press":
+            print("Переключение на следующий трек")
+        elif value == "Triple press":
+            print("Переключение на предыдущий трек")
+        elif value == "One press":
+            print("Пауза")
+
+    def volume(self, value):
+        if value == "+":
+            print("Увеличить громкость")
+        elif value == "-":
+            print("Уменьшить громкость")
+
+
+class User:
+
+    def __init__(self, headphone: IHeadphones):
+        self.headphone = headphone
+
+    @property
+    def headphone(self):
+        return self._headphone
+
+    @headphone.setter
+    def headphone(self, value: IHeadphones):
+        self._headphone = value
+
+
+print("Работа с наушниками:")
+user = User(WirelessHeadphones())
+user.headphone.type()
+user.headphone.connected()
+print(f"Подключение беспроводных наушников: {user.headphone.connect}")
+print("Ставим на паузу:")
+user.headphone.switching_music('One press')
+print("Смена наушников:")
+user.headphone(WiredHeadphones())
+
